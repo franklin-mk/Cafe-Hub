@@ -1,3 +1,4 @@
+// src/components/Admin/AdminProducts.jsx
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import { URL } from '../../url';
@@ -15,15 +16,19 @@ import {
   DialogContent,
   DialogActions,
   TextField,
-  Alert
+  Alert,
+  Chip
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
+import SearchProducts from '../SearchProducts';
+
 function AdminProductList() {
   const { user } = useUser();
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState({
@@ -50,10 +55,20 @@ function AdminProductList() {
       });
       const data = await response.json();
       setProducts(data);
+      setFilteredProducts(data);
     } catch (error) {
       console.error('Error fetching products:', error);
       setError('Failed to fetch products. Please try again.');
     }
+  };
+
+  const handleSearch = (searchTerm) => {
+    const filtered = products.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredProducts(filtered);
   };
 
   const handleAddProduct = () => {
@@ -163,13 +178,14 @@ function AdminProductList() {
         >
           Add Product
         </Button>
+        <SearchProducts onSearch={handleSearch} />
         {error && (
           <Alert severity="error" sx={{ mt: 2, mb: 2 }}>
             {error}
           </Alert>
         )}
         <Grid container spacing={3}>
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
             <Grid item xs={12} sm={6} md={4} key={product._id}>
               <Card sx={{ 
                 display: 'flex', 
@@ -196,11 +212,17 @@ function AdminProductList() {
                   <Typography variant="h6" component="h3" gutterBottom>
                     {product.name}
                   </Typography>
+                  <Chip 
+                    label={product.category} 
+                    sx={{ mb: 1 }} 
+                    color="primary" 
+                    variant="outlined"
+                  />
                   <Typography variant="body2" color="text.secondary" paragraph>
                     {product.description}
                   </Typography>
                   <Typography variant="h6" color="primary">
-                    ${product.price}
+                    Ksh. {product.price}
                   </Typography>
                 </CardContent>
                 <Box sx={{ p: 2 }}>

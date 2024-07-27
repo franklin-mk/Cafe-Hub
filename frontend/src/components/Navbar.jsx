@@ -1,6 +1,6 @@
 // src/components/Navbar.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   AppBar, 
   Toolbar, 
@@ -11,18 +11,16 @@ import {
   List, 
   ListItem, 
   ListItemText, 
-  InputBase, 
   Box,
   Popover,
   MenuItem
 } from '@mui/material';
 import { styled, alpha } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import RestaurantMenuIcon from '@mui/icons-material/RestaurantMenu';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import LocalCafeIcon from '@mui/icons-material/LocalCafe'; // Cafeteria-like icon
+import LocalCafeIcon from '@mui/icons-material/LocalCafe';
 import RateReviewIcon from '@mui/icons-material/RateReview';
 import { useUser } from '../contexts/UserContext';
 
@@ -30,7 +28,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { user, logout } = useUser();
-  
+  const navigate = useNavigate();
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
@@ -79,16 +77,6 @@ const Navbar = () => {
           </Typography>
         </Box>
 
-        <Search>
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search…"
-            inputProps={{ 'aria-label': 'search' }}
-          />
-        </Search>
-
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
             {menuItems.map((item) => (
@@ -98,9 +86,11 @@ const Navbar = () => {
             ))}
           </Box>
           
-          <Button color="inherit" component={Link} to="/cart">
-            <ShoppingCartIcon /> Cart
-          </Button>
+          {user && user.role !== 'admin' && (
+            <Button color="inherit" component={Link} to="/cart">
+              <ShoppingCartIcon /> Cart
+            </Button>
+          )}
           {user && (
             <>
               <Button color="inherit" onClick={handleClick} startIcon={<AccountCircleIcon />}>
@@ -144,45 +134,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-
-const Search = styled('div')(({ theme }) => ({
-  position: 'relative',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
-  '&:hover': {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
-  },
-  marginRight: theme.spacing(2),
-  marginLeft: theme.spacing(3),
-  width: '100%',
-  [theme.breakpoints.up('sm')]: {
-    marginLeft: theme.spacing(1),
-    width: 'auto',
-  },
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  padding: theme.spacing(0, 2),
-  height: '100%',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: '20ch',
-      '&:focus': {
-        width: '30ch',
-      },
-    },
-  },
-}));

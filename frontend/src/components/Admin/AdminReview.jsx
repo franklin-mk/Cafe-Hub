@@ -45,7 +45,21 @@ const AdminReview = () => {
 
   return (
     <div>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" 
+        gutterBottom
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          marginTop: '20px', 
+          marginBottom: '10px',
+          backgroundColor: 'grey', 
+          color: 'white', 
+          width: '100%', 
+          padding: '10px', 
+          borderRadius: '8px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
+        }}>
         Admin Review Management
       </Typography>
       <TextField

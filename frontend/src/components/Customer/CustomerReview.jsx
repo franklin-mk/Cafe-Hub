@@ -24,6 +24,7 @@ const CustomerReview = () => {
   const [review, setReview] = useState('');
   const [reviews, setReviews] = useState([]);
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
+  const [averageRating, setAverageRating] = useState(0);
   const { user } = useUser();
 
   useEffect(() => {
@@ -43,9 +44,19 @@ const CustomerReview = () => {
     try {
       const response = await axios.get(`${URL}/api/ratings-reviews/${productId}`);
       setReviews(response.data);
+      calculateAverageRating(response.data);
     } catch (error) {
       console.error('Error fetching reviews:', error);
     }
+  };
+
+  const calculateAverageRating = (reviews) => {
+    if (reviews.length === 0) {
+      setAverageRating(0);
+      return;
+    }
+    const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
+    setAverageRating(sum / reviews.length);
   };
 
   const handleProductChange = (event) => {
@@ -80,8 +91,24 @@ const CustomerReview = () => {
 
   return (
     <Box sx={{ maxWidth: 800, margin: 'auto' }}>
-      <Typography variant="h4" gutterBottom>
-        Customer Reviews
+      <Typography 
+        variant="h4" 
+        gutterBottom
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          marginTop: '20px', 
+          marginBottom: '10px',
+          backgroundColor: 'grey', 
+          color: 'white', 
+          width: '100%', 
+          padding: '10px', 
+          borderRadius: '8px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
+        }}
+      >
+        Customers Reviews
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
@@ -136,6 +163,10 @@ const CustomerReview = () => {
                 <Typography variant="h6">{selectedProductData.name}</Typography>
                 <Typography variant="body2" color="text.secondary">
                   {selectedProductData.description}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  Average Rating: <Rating value={averageRating} precision={0.1} readOnly />
+                  ({averageRating.toFixed(1)})
                 </Typography>
               </CardContent>
             </Card>

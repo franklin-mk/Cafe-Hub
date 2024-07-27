@@ -1,4 +1,4 @@
-//src/components/Login.jsx
+// src/components/Login.jsx
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
@@ -47,7 +47,7 @@ function Login() {
           token: data.token
         });
       } else {
-        setError(data.message);
+        setError(data.message || 'Login failed. Please try again.');
       }
     } catch (error) {
       console.error('Login error:', error);

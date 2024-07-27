@@ -1,5 +1,5 @@
-//src/components/Admin/AdminHome.jsx
-import React from 'react'
+// src/components/Admin/AdminHome.jsx
+import React from 'react';
 import {  
     Container, 
     Typography, 
@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
   
 import AdminProductList from './AdminProducts';
-import Navbar from '../Navbar'
+import Navbar from '../Navbar';
 import Footer from '../Footer';
 import { useUser } from '../../contexts/UserContext';
 
@@ -20,20 +20,29 @@ const AdminHome = () => {
 
   return (
     <div>
-        <Navbar />
-          <Container maxWidth="sm">
-            <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <Typography component="h1" variant="h5">
-                Welcome, Admin {user.name}!
-              </Typography>
-            </Box>
-          </Container>
-
-        <AdminProductList />
-        
-        <Footer />
+      <Navbar />
+      <Container maxWidth="sm">
+        <Box sx={{ mt: 5, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Typography 
+            component="h1" 
+            variant="h6" 
+            sx={{ 
+              fontWeight: 'bold', 
+              color: '#4caf50', 
+              padding: 2, 
+              borderRadius: 1, 
+              backgroundColor: '#f0f4c3', 
+              textAlign: 'center' 
+            }}
+          >
+            Welcome, Admin {user.name}!
+          </Typography>
+        </Box>
+      </Container>
+      <AdminProductList />
+      <Footer />
     </div>
-  )
-}
+  );
+};
 
-export default AdminHome
+export default AdminHome;

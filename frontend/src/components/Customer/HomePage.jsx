@@ -23,7 +23,18 @@ const HomePage = () => {
       <Navbar />
         <Container maxWidth="sm">
           <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Typography component="h1" variant="h5">
+            <Typography
+            component="h1" 
+            variant="h6" 
+            sx={{ 
+              fontWeight: 'bold', 
+              color: '#4caf50', 
+              padding: 2, 
+              borderRadius: 1, 
+              backgroundColor: '#f0f4c3', 
+              textAlign: 'center' 
+            }} 
+            >
               Welcome, {user.name}!
             </Typography>
           </Box>

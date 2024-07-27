@@ -53,7 +53,7 @@ export const login = async (req: Request, res: Response) => {
       cafeteria: role === 'admin' ? (user as IAdmin).cafeteria : undefined
     };
 
-    const token = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(payload, config.JWT_SECRET, { expiresIn: '7d' });
     res.json({ token, user: { id: user._id, email: user.email, name: user.name, role, cafeteria: payload.cafeteria } });
   } catch (error) {
     res.status(500).json({ message: 'Error logging in', error });

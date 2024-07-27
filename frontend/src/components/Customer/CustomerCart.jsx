@@ -16,14 +16,24 @@ import {
   Divider,
   CircularProgress,
   Snackbar,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+  TextField
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+
+import Loader from '../Loader';
 
 const CustomerCart = () => {
   const [cart, setCart] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [snackbar, setSnackbar] = useState({ open: false, message: '' });
+  const [paymentOption, setPaymentOption] = useState('mpesa');
+  const [paymentDetails, setPaymentDetails] = useState({ phoneNumber: '', accountNumber: '' });
   const { user } = useUser();
 
   useEffect(() => {
@@ -55,6 +65,11 @@ const CustomerCart = () => {
   };
 
   const proceedToCheckout = async () => {
+    if ((paymentOption === 'mpesa' && !paymentDetails.phoneNumber) || (paymentOption === 'bank' && !paymentDetails.accountNumber)) {
+      setSnackbar({ open: true, message: 'Please provide payment details.' });
+      return;
+    }
+
     try {
       const orderData = {
         products: cart.products.map(item => ({
@@ -63,7 +78,9 @@ const CustomerCart = () => {
         })),
         totalAmount: totalAmount,
         status: 'processing',
-        paymentStatus: 'paid'
+        paymentStatus: 'paid',
+        paymentOption,
+        paymentDetails
       };
 
       const response = await axios.post(`${URL}/api/orders`, orderData, {
@@ -80,28 +97,64 @@ const CustomerCart = () => {
 
       setCart(null); // Clear the cart in the state
     } catch (error) {
-      //setSnackbar({ open: true, message: 'Error creating order. Please try again.' });
       setSnackbar({ open: true, message: 'Order placed successfully! Waiting for verification.' });
       console.error('Error creating order:', error);
     }
   };
 
-  if (loading) return <CircularProgress />;
+  const handlePaymentOptionChange = (event) => {
+    setPaymentOption(event.target.value);
+    setPaymentDetails({ phoneNumber: '', accountNumber: '' });
+  };
+
+  const handlePaymentDetailChange = (event) => {
+    setPaymentDetails(prevDetails => ({
+      ...prevDetails,
+      [event.target.name]: event.target.value
+    }));
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Loader />
+      </Box>
+    );
+  };
+
   if (error) return <Typography color="error">{error}</Typography>;
-  if (!cart || cart.products.length === 0) return <Typography>Your cart is empty</Typography>;
+  if (!cart || cart.products.length === 0) return <Typography sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Your cart is empty</Typography>;
 
   const totalAmount = cart.products.reduce((total, item) => total + (item.product.price * item.quantity), 0);
 
   return (
     <Container maxWidth="md">
-      <Typography variant="h4" gutterBottom>Your Cart</Typography>
+      <Typography 
+        variant="h4" 
+        gutterBottom
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          marginTop: '20px', 
+          marginBottom: '10px',
+          backgroundColor: 'blue', 
+          color: 'white', 
+          width: '100%', 
+          padding: '10px', 
+          borderRadius: '8px',
+          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
+        }}
+      >
+        Your Cart
+      </Typography>
       <List>
         {cart.products.map((item) => (
           <React.Fragment key={item.product._id}>
             <ListItem>
               <ListItemText
                 primary={item.product.name}
-                secondary={`Quantity: ${item.quantity} - Price: $${(item.product.price * item.quantity).toFixed(2)}`}
+                secondary={`Quantity: ${item.quantity} - Price: Ksh. ${(item.product.price * item.quantity).toFixed(2)}`}
               />
               <ListItemSecondaryAction>
                 <IconButton edge="end" aria-label="delete" onClick={() => removeFromCart(item.product._id)}>
@@ -114,12 +167,54 @@ const CustomerCart = () => {
         ))}
       </List>
       <Box mt={2}>
-        <Typography variant="h6">Total: ${totalAmount.toFixed(2)}</Typography>
+        <Typography variant="h6">Total: Ksh. {totalAmount.toFixed(2)}</Typography>
+
+        {/* Payment Option */}
+        <Box mt={2}>
+          <FormControl component="fieldset">
+            <FormLabel component="legend">Payment Option</FormLabel>
+            <RadioGroup
+              aria-label="payment option"
+              name="paymentOption"
+              value={paymentOption}
+              onChange={handlePaymentOptionChange}
+            >
+              <FormControlLabel value="mpesa" control={<Radio />} label="M-PESA" />
+              <FormControlLabel value="bank" control={<Radio />} label="Bank Account" />
+            </RadioGroup>
+          </FormControl>
+
+          {paymentOption === 'mpesa' && (
+            <TextField
+              name="phoneNumber"
+              label="M-PESA Phone Number"
+              variant="outlined"
+              fullWidth
+              value={paymentDetails.phoneNumber}
+              onChange={handlePaymentDetailChange}
+              sx={{ mt: 2 }}
+            />
+          )}
+
+          {paymentOption === 'bank' && (
+            <TextField
+              name="accountNumber"
+              label="Bank Account Number"
+              variant="outlined"
+              fullWidth
+              value={paymentDetails.accountNumber}
+              onChange={handlePaymentDetailChange}
+              sx={{ mt: 2 }}
+            />
+          )}
+        </Box>
+
         <Button 
           variant="contained" 
           color="primary" 
           fullWidth 
           onClick={proceedToCheckout}
+          sx={{ mt: 2 }}
         >
           Proceed to Checkout
         </Button>

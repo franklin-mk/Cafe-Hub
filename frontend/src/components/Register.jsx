@@ -1,4 +1,4 @@
-//src/components/Register.jsx
+// src/components/Register.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
@@ -13,7 +13,12 @@ import {
   Container, 
   Typography, 
   Box,
-  Alert
+  Alert,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
 } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 
@@ -26,6 +31,7 @@ function Register() {
   const [role, setRole] = useState('customer');
   const [cafeteria, setCafeteria] = useState('');
   const [error, setError] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ function Register() {
     try {
       const userData = role === 'admin' 
         ? { email, password, name, role, cafeteria }
-        : { email, password, name };
+        : { email, password, name, role };
 
       const response = await fetch(`${URL}/api/auth/register`, {
         method: 'POST',
@@ -42,15 +48,19 @@ function Register() {
       });
       const data = await response.json();
       if (response.ok) {
-        login(data.user);
-        navigate('/');
+        setOpenDialog(true);
       } else {
-        setError(data.message);
+        setError(data.message || 'Registration failed. Please try again.');
       }
     } catch (error) {
       console.error('Registration error:', error);
       setError('An unexpected error occurred. Please try again.');
     }
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+    navigate('/');
   };
 
   return (
@@ -152,6 +162,27 @@ function Register() {
           </Typography>
         </Box>
       </Box>
+
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Registration Successful"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Your account has been successfully created. You can now proceed to login.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog} autoFocus>
+            Proceed to Login
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

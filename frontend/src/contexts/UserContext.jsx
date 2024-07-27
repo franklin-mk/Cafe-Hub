@@ -19,9 +19,13 @@ export function UserProvider({ children }) {
   }, []);
 
   const login = (userData) => {
+    if (!userData) {
+      console.error('Invalid user data provided to login function');
+      return;
+    }
     const userWithToken = {
       ...userData,
-      token: userData.token // Make sure the token is included in userData
+      token: userData.token || null // Use null if token is not present
     };
     setUser(userWithToken);
     try {

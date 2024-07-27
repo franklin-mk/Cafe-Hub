@@ -59,7 +59,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             role,
             cafeteria: role === 'admin' ? user.cafeteria : undefined
         };
-        const token = jsonwebtoken_1.default.sign(payload, config_1.default.JWT_SECRET, { expiresIn: '1h' });
+        const token = jsonwebtoken_1.default.sign(payload, config_1.default.JWT_SECRET, { expiresIn: '7d' });
         res.json({ token, user: { id: user._id, email: user.email, name: user.name, role, cafeteria: payload.cafeteria } });
     }
     catch (error) {
