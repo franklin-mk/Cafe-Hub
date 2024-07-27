@@ -93,7 +93,7 @@ const CustomerOrders = () => {
                     </Typography>
                   ))}
                 </TableCell>
-                <TableCell>${order.totalAmount.toFixed(2)}</TableCell>
+                <TableCell>Ksh. {order.totalAmount.toFixed(2)}</TableCell>
                 <TableCell>
                   <Chip
                     label={order.status}
