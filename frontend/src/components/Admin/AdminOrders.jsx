@@ -82,7 +82,7 @@ const AdminOrders = () => {
               <TableRow key={order._id}>
                 <TableCell>{order._id}</TableCell>
                 <TableCell>{order.customer.name}</TableCell>
-                <TableCell>ksh. {order.totalAmount.toFixed(2)}</TableCell>
+                <TableCell>Ksh. {order.totalAmount.toFixed(2)}</TableCell>
                 <TableCell>{order.status}</TableCell>
                 <TableCell>{order.paymentStatus}</TableCell>
                 <TableCell>
