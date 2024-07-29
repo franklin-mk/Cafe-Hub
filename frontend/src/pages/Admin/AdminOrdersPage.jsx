@@ -1,13 +1,30 @@
-// src/pages/Admin/AdminOrdersPage.jsx
 import React from 'react';
 import AdminOrders from '../../components/Admin/AdminOrders';
-import { Container } from '@mui/material';
+import { Container, Box } from '@mui/material';
+import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 const AdminOrdersPage = () => {
   return (
-    <Container maxWidth="lg">
-      <AdminOrders />
-    </Container>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+      }}
+    >
+      <Navbar />
+      <Box
+        sx={{
+          flex: 1,
+        }}
+      >
+        <Container maxWidth="lg">
+          <AdminOrders />
+        </Container>
+      </Box>
+      <Footer />
+    </Box>
   );
 };
 

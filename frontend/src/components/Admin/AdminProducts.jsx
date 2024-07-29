@@ -17,7 +17,8 @@ import {
   DialogActions,
   TextField,
   Alert,
-  Chip
+  Chip,
+  CircularProgress
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
@@ -39,6 +40,7 @@ function AdminProductList() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (user && user.token) {
@@ -47,6 +49,7 @@ function AdminProductList() {
   }, [user]);
 
   const fetchProducts = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`${URL}/api/products`, {
         headers: {
@@ -59,6 +62,8 @@ function AdminProductList() {
     } catch (error) {
       console.error('Error fetching products:', error);
       setError('Failed to fetch products. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -162,6 +167,14 @@ function AdminProductList() {
 
   if (!user || user.role !== 'admin') {
     return <Typography variant="body1">Access denied. Admin only.</Typography>;
+  }
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Box>
+    );
   }
 
   return (

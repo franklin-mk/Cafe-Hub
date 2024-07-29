@@ -1,21 +1,10 @@
-// src/components/Admin/AdminOrders.jsx
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import axios from 'axios';
 import { URL } from '../../url';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Typography,
-  FormControl,
-  Select,
-  MenuItem,
-  Box,
+import { 
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, 
+  Paper, Typography, FormControl, Select, MenuItem, Box, CircularProgress 
 } from '@mui/material';
 
 const AdminOrders = () => {
@@ -54,26 +43,26 @@ const AdminOrders = () => {
     }
   };
 
-  if (loading) return <Typography>Loading...</Typography>;
-  if (error) return <Typography color="error">{error}</Typography>;
-
-  return (
-    <Box sx={{ margin: 2 }}>
-      <Typography variant="h4" 
-        gutterBottom
+  if (loading) {
+    return (
+      <Box 
         sx={{ 
           display: 'flex', 
           justifyContent: 'center', 
           alignItems: 'center', 
-          marginTop: '20px', 
-          marginBottom: '10px',
-          backgroundColor: 'grey', 
-          color: 'white', 
-          width: '100%', 
-          padding: '10px', 
-          borderRadius: '8px',
-          boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
-        }}>
+          height: '100vh' 
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) return <Typography color="error">{error}</Typography>;
+
+  return (
+    <Box sx={{ margin: 2 }}>
+      <Typography variant="h4" gutterBottom sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', marginBottom: '10px', backgroundColor: 'grey', color: 'white', width: '100%', padding: '10px', borderRadius: '8px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)' }}>
         Admin Orders
       </Typography>
       <TableContainer component={Paper}>

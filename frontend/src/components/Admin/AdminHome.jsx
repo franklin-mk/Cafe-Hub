@@ -35,7 +35,7 @@ const AdminHome = () => {
               textAlign: 'center' 
             }}
           >
-            Welcome, Admin {user.name}!
+            Welcome, {user.name}!
           </Typography>
         </Box>
       </Container>
