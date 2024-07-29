@@ -210,7 +210,7 @@ const ProductList = () => {
                 />
               </CardContent>
               <Box sx={{ p: 2 }}>
-                <Button 
+                {/* <Button 
                   variant="contained" 
                   color="primary" 
                   onClick={() => createOrder(product)}
@@ -218,7 +218,7 @@ const ProductList = () => {
                   sx={{ mb: 1 }}
                 >
                   Order Now
-                </Button>
+                </Button> */}
                 <Button 
                   variant="contained" 
                   fullWidth 
