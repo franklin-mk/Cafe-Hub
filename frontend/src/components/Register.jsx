@@ -123,7 +123,7 @@ function Register() {
               onChange={(e) => setRole(e.target.value)}
             >
               <MenuItem value="customer">Customer</MenuItem>
-              <MenuItem value="admin">Admin</MenuItem>
+              {/* <MenuItem value="admin">Admin</MenuItem> */}
             </Select>
           </FormControl>
           
