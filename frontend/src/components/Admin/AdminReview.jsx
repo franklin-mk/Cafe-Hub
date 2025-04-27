@@ -1,4 +1,5 @@
 // src/components/Admin/AdminReview.jsx
+// USE THE FETCHING OF PTODUCT IMPLEMENTED HERE FOR THE INDIVIDUALS REVIEW FINDING
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { URL } from '../../url';

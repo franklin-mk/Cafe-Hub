@@ -1,8 +1,10 @@
-// src/components/ProductList.jsx
+//src/components/Customer/Product/ProductList.jsx
+// MODIFY THIS FILES OR ADD NEW ONES SO THAT WHEN A PRODUCT CARD IS CLICKED IT REDIRECTS THE USER TO THAT INDIVIDUAL PRODUCTS IE DETAILS REVIEWS ETC
+
 import React, { useState, useEffect } from 'react';
-import { useUser } from '../contexts/UserContext';
+import { useUser } from '../../../contexts/UserContext';
 import axios from 'axios';
-import { URL } from '../url';
+import { URL } from '../../../url';
 import {
   Grid,
   Card,
@@ -16,9 +18,15 @@ import {
   Box,
   Chip,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Divider
 } from '@mui/material';
-
-import SearchProducts from './SearchProducts';
+import CommentIcon from '@mui/icons-material/Comment';
+import SearchProducts from '../../SearchProducts';
+import ProductCard from './ProductCard';
 
 const ProductList = () => {
   const [products, setProducts] = useState([]);
@@ -28,6 +36,12 @@ const ProductList = () => {
   const [averageRatings, setAverageRatings] = useState({});
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
+  
+  // New state for reviews dialog
+  const [openReviewsDialog, setOpenReviewsDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productReviews, setProductReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {
     fetchProducts();
@@ -73,6 +87,24 @@ const ProductList = () => {
     } catch (error) {
       console.error('Error fetching reviews:', error);
     }
+  };
+
+  // New function to handle showing reviews
+  const handleShowReviews = (product) => {
+    setSelectedProduct(product);
+    setOpenReviewsDialog(true);
+    setReviewsLoading(true);
+    
+    axios.get(`${URL}/api/ratings-reviews/${product._id}`)
+      .then(response => {
+        setProductReviews(response.data);
+        setReviewsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching reviews:', error);
+        setReviewsLoading(false);
+        setSnackbar({ open: true, message: 'Error fetching reviews. Please try again.' });
+      });
   };
 
   const handleSearch = (searchTerm) => {
@@ -151,87 +183,80 @@ const ProductList = () => {
   return (
     <Box sx={{ maxWidth: 1200, margin: 'auto', padding: 2 }}>
       <Typography variant="h4" gutterBottom>
-        Product List
+        Available Products:
       </Typography>
       <SearchProducts onSearch={handleSearch} />
       <Grid container spacing={3}>
-        {filteredProducts.map((product) => (
-          <Grid item xs={12} sm={6} md={4} key={product._id}>
-            <Card sx={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              height: '100%',
-              justifyContent: 'space-between'
-            }}>
-              <Box sx={{ position: 'relative', paddingTop: '56.25%' }}>
-                <CardMedia
-                  component="img"
-                  sx={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                  }}
-                  image={product.image}
-                  alt={product.name}
+            {filteredProducts.map((product) => (
+            <Grid item xs={12} sm={6} md={4} key={product._id}>
+                <ProductCard 
+                    product={product}
+                    quantity={quantities[product._id]}
+                    onQuantityChange={handleQuantityChange}
+                    onAddToCart={addToCart}
+                    onShowReviews={handleShowReviews}
+                    averageRating={averageRatings[product._id]}
                 />
-              </Box>
-              <CardContent sx={{ flexGrow: 1 }}>
-                <Typography gutterBottom variant="h5" component="div" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                  {product.name}
+            </Grid>
+            ))}
+        </Grid>
+
+
+      {/* Reviews Dialog */}
+      <Dialog 
+        open={openReviewsDialog} 
+        onClose={() => setOpenReviewsDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedProduct && `Reviews for ${selectedProduct.name}`}
+        </DialogTitle>
+        <DialogContent>
+          {reviewsLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              {productReviews.length > 0 ? (
+                <Grid container spacing={2}>
+                  {productReviews.map((review) => (
+                    <Grid item xs={12} key={review._id}>
+                      <Card elevation={2}>
+                        <CardContent>
+                          <Typography variant="h6">
+                            {review.customer ? review.customer.name : 'Anonymous User'}
+                          </Typography>
+                          <Rating 
+                            name={`rating-${review._id}`} 
+                            value={review.rating} 
+                            readOnly 
+                            sx={{ mb: 1 }}
+                          />
+                          <Typography variant="body1">{review.review}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                      {/* <Divider sx={{ mt: 2, mb: 2 }} /> */}
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Typography variant="body1" sx={{ py: 3, textAlign: 'center' }}>
+                  No reviews available for this product.
                 </Typography>
-                <Chip 
-                  label={product.category} 
-                  sx={{ mb: 1, backgroundColor: 'grey', color: 'white' }} 
-                  variant="outlined"
-                />
-                <Typography variant="body2" color="text.secondary">
-                  {product.description}
-                </Typography>
-                <Typography variant="h6" color="text.primary" sx={{ mt: 2 }}>
-                  Ksh. {product.price.toFixed(2)}
-                </Typography>
-                <Rating
-                  name={`rating-${product._id}`}
-                  value={averageRatings[product._id] || 0}
-                  precision={0.5}
-                  readOnly
-                />
-                <TextField
-                  type="number"
-                  label="Quantity"
-                  value={quantities[product._id]}
-                  onChange={(e) => handleQuantityChange(product._id, e.target.value)}
-                  inputProps={{ min: 1 }}
-                  margin="normal"
-                  fullWidth
-                />
-              </CardContent>
-              <Box sx={{ p: 2 }}>
-                {/* <Button 
-                  variant="contained" 
-                  color="primary" 
-                  onClick={() => createOrder(product)}
-                  fullWidth
-                  sx={{ mb: 1 }}
-                >
-                  Order Now
-                </Button> */}
-                <Button 
-                  variant="contained" 
-                  fullWidth 
-                  sx={{ backgroundColor: 'black', color: 'white' }}
-                  onClick={() => addToCart(product)}
-                >
-                  Add to Cart
-                </Button>
-              </Box>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+              )}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenReviewsDialog(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
+
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}

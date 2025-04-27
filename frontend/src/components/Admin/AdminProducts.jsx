@@ -18,11 +18,13 @@ import {
   TextField,
   Alert,
   Chip,
-  CircularProgress
+  CircularProgress,
+  Rating
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CommentIcon from '@mui/icons-material/Comment';
 
 import SearchProducts from '../SearchProducts';
 
@@ -41,6 +43,12 @@ function AdminProductList() {
   const [imageFile, setImageFile] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  
+  // Reviews related state
+  const [openReviewsDialog, setOpenReviewsDialog] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [productReviews, setProductReviews] = useState([]);
+  const [reviewsLoading, setReviewsLoading] = useState(false);
 
   useEffect(() => {
     if (user && user.token) {
@@ -65,6 +73,30 @@ function AdminProductList() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchProductReviews = async (productId) => {
+    setReviewsLoading(true);
+    try {
+      const response = await fetch(`${URL}/api/ratings-reviews/${productId}`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      });
+      const data = await response.json();
+      setProductReviews(data);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      setError('Failed to fetch reviews. Please try again.');
+    } finally {
+      setReviewsLoading(false);
+    }
+  };
+
+  const handleShowReviews = (product) => {
+    setSelectedProduct(product);
+    setOpenReviewsDialog(true);
+    fetchProductReviews(product._id);
   };
 
   const handleSearch = (searchTerm) => {
@@ -256,6 +288,15 @@ function AdminProductList() {
                   >
                     Delete
                   </Button>
+                  <Button 
+                    startIcon={<CommentIcon />} 
+                    color="info"
+                    onClick={() => handleShowReviews(product)}
+                    fullWidth
+                    sx={{ mt: 1 }}
+                  >
+                    Reviews
+                  </Button>
                 </Box>
               </Card>
             </Grid>
@@ -263,6 +304,7 @@ function AdminProductList() {
         </Grid>
       </Box>
 
+      {/* Product Form Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>{editingProduct ? 'Edit Product' : 'Add Product'}</DialogTitle>
         <DialogContent>
@@ -326,6 +368,60 @@ function AdminProductList() {
           <Button onClick={handleSubmit} variant="contained" color="primary">
             {editingProduct ? 'Update' : 'Add'}
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Reviews Dialog */}
+      <Dialog 
+        open={openReviewsDialog} 
+        onClose={() => setOpenReviewsDialog(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedProduct && `Reviews for ${selectedProduct.name}`}
+        </DialogTitle>
+        <DialogContent>
+          {reviewsLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', p: 3 }}>
+              <CircularProgress />
+            </Box>
+          ) : (
+            <>
+              {productReviews.length > 0 ? (
+                <Grid container spacing={2}>
+                  {productReviews.map((review) => (
+                    <Grid item xs={12} key={review._id}>
+                      <Card elevation={2}>
+                        <CardContent>
+                          <Typography variant="h6">
+                            {review.customer ? review.customer.name : 'Anonymous User'}
+                          </Typography>
+                          <Rating 
+                            name={`rating-${review._id}`} 
+                            value={review.rating} 
+                            readOnly 
+                            sx={{ mb: 1 }}
+                          />
+                          <Typography variant="body1">{review.review}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              ) : (
+                <Typography variant="body1" sx={{ py: 3, textAlign: 'center' }}>
+                  No reviews available for this product.
+                </Typography>
+              )}
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenReviewsDialog(false)}>Close</Button>
         </DialogActions>
       </Dialog>
     </Container>

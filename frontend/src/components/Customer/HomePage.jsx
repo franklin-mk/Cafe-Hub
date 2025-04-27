@@ -6,7 +6,7 @@ import {
     Box
 } from '@mui/material';
   
-import ProductList from '../ProductList'
+import ProductList from './Product/ProductList'
 import Navbar from '../Navbar'
 import Footer from '../Footer';
 import { useUser } from '../../contexts/UserContext';

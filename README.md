@@ -6,4 +6,3 @@ To access the admin panel, please use the following credentials:
 **Password:** `admin`
 
 ---
-testing

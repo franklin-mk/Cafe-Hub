@@ -18,6 +18,9 @@ import CustomerOrderPage from './pages/Customer/CustomerOrderPage';
 import CustomerCartpage from './pages/Customer/CustomerCartpage';
 import CustomerReviewPage from './pages/Customer/CustomerReviewPage';
 
+//Individual Product Page
+import ProductDetailPage from './pages/Customer/ProductDetailPage';
+
 function App() {
   const { user } = useUser();
 
@@ -27,7 +30,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<RegisterUser />} />
 
-      <Route path="/reviews" element={user ? (user.role === 'admin' ? < AdminSeeReviewPage/> : <CustomerReviewPage />) : <></>} />
+      <Route path="/reviews" element={user ? (user.role === 'admin' ? <AdminSeeReviewPage/> : <CustomerReviewPage />) : <></>} />
 
       <Route path="/admin" element={
         <ProtectedRoute role="admin">
@@ -56,6 +59,10 @@ function App() {
         </ProtectedRoute>
       } />
 
+      {/* New route for individual product details */}
+      <Route path="/product/:productId" element={
+        user ? <ProductDetailPage /> : <Navigate to="/login" />
+      } />
     </Routes>
   )
 }

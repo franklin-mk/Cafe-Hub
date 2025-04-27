@@ -1,5 +1,5 @@
 import React from 'react';
-import CustomerOrders from '../../components/Customer/CustomerOrders';
+import CustomerOrders from '../../components/Customer/Orders/CustomerOrders';
 import { Container, Box } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';

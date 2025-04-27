@@ -1,6 +1,6 @@
 // src/pages/Customer/CustomerCartPage.jsx
 import React from 'react';
-import CustomerCart from '../../components/Customer/CustomerCart';
+import CustomerCart from '../../components/Customer/Cart/CustomerCart';
 import { Container } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';

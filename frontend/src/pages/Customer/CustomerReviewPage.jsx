@@ -1,5 +1,5 @@
 import React from 'react';
-import CustomerReview from '../../components/Customer/CustomerReview';
+import CustomerReview from '../../components/Customer/Reviews/CustomerReview';
 import { Container, Box } from '@mui/material';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';

@@ -1,3 +1,4 @@
+//AdminOrders.jsx
 import React, { useState, useEffect } from 'react';
 import { useUser } from '../../contexts/UserContext';
 import axios from 'axios';
@@ -37,7 +38,7 @@ const AdminOrders = () => {
         { status: newStatus },
         { headers: { Authorization: `Bearer ${user.token}` } }
       );
-      fetchOrders(); // Refresh orders after update
+      fetchOrders();
     } catch (err) {
       setError('Failed to update order status');
     }
