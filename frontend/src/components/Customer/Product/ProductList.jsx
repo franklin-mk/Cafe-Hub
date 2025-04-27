@@ -182,9 +182,6 @@ const ProductList = () => {
 
   return (
     <Box sx={{ maxWidth: 1200, margin: 'auto', padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        Available Products:
-      </Typography>
       <SearchProducts onSearch={handleSearch} />
       <Grid container spacing={3}>
             {filteredProducts.map((product) => (
